@@ -1,0 +1,31 @@
+-- CREATE TABLE vessel(
+--     id integer PRIMARY KEY,
+--     name varchar(100) NOT NULL
+-- );
+-- INSERT INTO vessel(id, name)
+--     VALUES (1, 'Tofesoo Rego');
+-- INSERT INTO vessel(id, name)
+--     VALUES (2, 'Saske Voook');
+-- INSERT INTO vessel(id, name)
+--     VALUES (3, 'Mokee Voook');
+--
+--
+--
+--
+--
+-- CREATE TABLE "ssd"(
+--     id serial PRIMARY KEY NOT NULL,
+--     date date NOT NULL,
+--     company varchar(50) NOT NULL,
+--     agreementNo varchar(20) NOT NULL,
+--     zone varchar(50) NOT NULL,
+--     coordinates varchar(50) NOT NULL,
+--     vessel_id integer,
+--     FOREIGN KEY (vessel_id) REFERENCES vessel(id)
+-- );
+-- INSERT INTO ssd(id, date, company, agreementNo, zone, coordinates, vessel_id)
+--     VALUES (1, '2020-02-23', 'Tihrybkom', '#123', 'zona1', '49320000', 1);
+-- INSERT INTO ssd(id, date, company, agreementNo, zone, coordinates, vessel_id)
+--     VALUES (2, '2020-02-24', 'Tihrybkom', '#124', 'zona2', '89000002', 2);
+-- INSERT INTO ssd(id, date, company, agreementNo, zone, coordinates, vessel_id)
+--     VALUES (3, '2020-02-23', 'MagSea', '#123', 'zona3', '66643030', 3);
