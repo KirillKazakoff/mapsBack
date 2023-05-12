@@ -6,8 +6,8 @@
     "scripts": {
         "lint": "eslint .",
         "prestart": "yarn",
-        "dev": "nodemon --exec babel-node --inspect serverApp.js",
-        "start": "babel-node ./src/serverApp.js"
+        "dev": "nodemon --exec babel-node --inspect ./src/serverApp.ts",
+        "start": "nodemon ./src/serverApp.ts -- --inspect"
     },
     "devDependencies": {
         "@types/koa__cors": "^4.0.0",
@@ -35,6 +35,7 @@
         "nodemon": "^2.0.13",
         "pg": "^8.10.0",
         "ts-node": "^10.9.1",
+        "typeorm": "^0.3.16",
         "typescript": "^4.9.4"
     }
 }
