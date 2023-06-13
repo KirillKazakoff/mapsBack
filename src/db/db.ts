@@ -8,4 +8,8 @@ const db = new Pool({
     database: 'postgres',
 });
 
+db.on('error', (err, client) => {
+    process.exit();
+});
+
 export default db;

@@ -2,9 +2,9 @@ export type SSD = {
     id: string;
     date: string;
     vessel_id: number;
-    company: string;
+    company_id: string;
     agreement_no: string;
-    zone: string;
+    zone_id: string;
     coordinates: string;
 };
 
@@ -17,7 +17,8 @@ export type ProductionCatch = {
 export type ProductionOutput = {
     id_ssd: string;
     name: string;
-    amount: number;
+    current: number;
+    total: number;
 };
 
 export type Vessel = {
