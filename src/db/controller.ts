@@ -3,24 +3,40 @@ import { SSD } from '../models/models';
 import db from './db';
 import { queries } from './queriesDb/queries';
 import pgFormat from 'pg-format';
+import { dateDb } from '../utils/date';
 
-export const addSsd = async ({ request, response }: CtxT) => {
-    const ssd = <SSD>request.body;
+const addSsd = async (ssdCurrent: SSD) => {
+    const res = await db.query(queries.get.lastSsdByVessel(ssdCurrent.vessel_id));
+    const ssdLast: SSD = res.rows[0];
+    console.log(res.rows);
 
-    const query = `INSERT INTO ssd(id, date, vessel_id, company, agreement_no, zone, coordinates) values ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+    if (ssdLast) {
+        const dateLast = dateDb.fromDb(ssdLast.date);
+        if (dateLast === ssdCurrent.date) return;
+    }
 
-    const newSsd = await db.query(query, [
-        ssd.id,
-        ssd.date,
-        ssd.vessel_id,
-        ssd.company_id,
-        ssd.agreement_no,
-        ssd.zone_id,
-        ssd.coordinates,
+    ssdCurrent.date = dateDb.toDb(ssdCurrent.date);
+
+    await db.query(queries.post.ssd, [
+        ssdCurrent.id,
+        ssdCurrent.date,
+        ssdCurrent.company_id,
+        ssdCurrent.agreement_no,
+        ssdCurrent.catch_zone_id,
+        ssdCurrent.coordinates,
+        ssdCurrent.vessel_id,
     ]);
+};
 
-    response.body = newSsd.rows[0];
-    console.log(ssd);
+export const addSsdList = async ({ request, response }: CtxT) => {
+    const ssdList = <SSD[]>request.body;
+
+    const promises = ssdList.map(async (ssd) => {
+        await addSsd(ssd);
+    });
+    await Promise.all(promises);
+
+    response.status = 200;
 };
 
 export const getSsd = async ({ response }: CtxT) => {

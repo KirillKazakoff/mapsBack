@@ -1,10 +1,10 @@
 export type SSD = {
     id: string;
     date: string;
-    vessel_id: number;
+    vessel_id: string;
     company_id: string;
     agreement_no: string;
-    zone_id: string;
+    catch_zone_id: string;
     coordinates: string;
 };
 
