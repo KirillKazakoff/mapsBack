@@ -1,7 +1,8 @@
+import { SSD } from '../../models/models';
+
 export const queries = {
     get: {
-        ssd: `SELECT
-            vessel.name AS vessel,
+        ssd: `SELECT vessel.name AS vessel,
             company.name AS company,
             catch_zone.name AS catch_zone,
             ssd.date
@@ -11,8 +12,7 @@ export const queries = {
             JOIN company ON company.id = ssd.company_id
             JOIN catch_zone ON catch_zone.id = ssd.catch_zone_id
         `,
-        lastSsdByVessel: (id: string) => `SELECT
-                *
+        lastSsdByVessel: (id: string) => `SELECT *
             FROM
                 ssd s
             WHERE
@@ -20,12 +20,12 @@ export const queries = {
             ORDER BY
                 s.date DESC
             LIMIT 1;
-        `,
+`,
     },
     post: {
-        ssd: `INSERT INTO ssd
+        ssd: (ssd: SSD) => `INSERT INTO ssd
             (id, date, company_id, agreement_no, catch_zone_id, coordinates, vessel_id)
-            values ($1, $2, $3, $4, $5, $6, $7) 
+            values ('${ssd.id}', '${ssd.date}', '${ssd.company_id}', '${ssd.agreement_no}', '${ssd.catch_zone_id}', '${ssd.coordinates}', '${ssd.vessel_id}') 
             RETURNING *
         `,
         catch_zones: `INSERT INTO catch_zone (id, NAME)

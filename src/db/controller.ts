@@ -5,37 +5,16 @@ import { queries } from './queriesDb/queries';
 import pgFormat from 'pg-format';
 import { dateDb } from '../utils/date';
 
-const addSsd = async (ssdCurrent: SSD) => {
-    const res = await db.query(queries.get.lastSsdByVessel(ssdCurrent.vessel_id));
-    const ssdLast: SSD = res.rows[0];
-    console.log(res.rows);
-
-    if (ssdLast) {
-        const dateLast = dateDb.fromDb(ssdLast.date);
-        if (dateLast === ssdCurrent.date) return;
-    }
-
-    ssdCurrent.date = dateDb.toDb(ssdCurrent.date);
-
-    await db.query(queries.post.ssd, [
-        ssdCurrent.id,
-        ssdCurrent.date,
-        ssdCurrent.company_id,
-        ssdCurrent.agreement_no,
-        ssdCurrent.catch_zone_id,
-        ssdCurrent.coordinates,
-        ssdCurrent.vessel_id,
-    ]);
-};
-
 export const addSsdList = async ({ request, response }: CtxT) => {
     const ssdList = <SSD[]>request.body;
 
     const promises = ssdList.map(async (ssd) => {
-        await addSsd(ssd);
+        ssd.date = dateDb.toDb(ssd.date);
+        await db.query(queries.post.ssd(ssd));
     });
     await Promise.all(promises);
 
+    console.log('made it');
     response.status = 200;
 };
 
