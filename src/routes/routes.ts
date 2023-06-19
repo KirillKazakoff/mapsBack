@@ -1,20 +1,13 @@
 import Router from 'koa-router';
-import { addSsdList } from '../db/controller';
-import {
-    getSsd,
-    getSsdById,
-    getVessels,
-    getVesselById,
-    updateZones,
-} from '../db/controller';
+import { addSSDInfo, getSsdByVesselId, getSSDInfoByVesselId } from '../db/controller';
+import { getVessels, getVesselById, updateZones } from '../db/controller';
 
 const router = new Router();
 
 router.post('/zones', updateZones);
 
-router.post('/ssd', addSsdList);
-router.get('/ssd', getSsd);
-router.get('/ssd/:id', getSsdById);
+router.post('/ssd', addSSDInfo);
+router.get('/ssd/:id', getSSDInfoByVesselId);
 
 router.get('/vessel', getVessels);
 router.get('/vessel/:id', getVesselById);
