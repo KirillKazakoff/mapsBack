@@ -46,40 +46,49 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
 };
 
 export const getSSDInfoByVesselId = async ({ params, response }: CtxT) => {
-    const ssd = (await db.query<SSD>(queries.get.ssdByVessel(params.id))).rows[0];
+    const ssdList = (await db.query<SSD>(queries.get.ssdByVessel(params.id))).rows;
 
-    const details = await db.query<ProductionDetails>(
-        queries.get.productionDetails(ssd.id)
-    );
-    const input = (await db.query<ProductionInput>(queries.get.productionInput(ssd.id)))
-        .rows[0];
-    const reserve = (await db.query<Reserve>(queries.get.reserve(ssd.id))).rows[0];
-    const bait = (await db.query<Bait>(queries.get.bait(ssd.id))).rows[0];
+    const ssdInfoListPromises = ssdList.map((ssd) => {
+        return new Promise(async (resolve) => {
+            if (!ssd) {
+                resolve(null);
+                return null;
+            }
 
-    const ssdInfo: SSDInfoSoleT = {
-        ssd: ssd,
-        productionDetails: details.rows,
-        productionInput: input,
-        reserve,
-        bait,
-    };
+            const details = await db.query<ProductionDetails>(
+                queries.get.productionDetails(ssd.id)
+            );
+            const input = (
+                await db.query<ProductionInput>(queries.get.productionInput(ssd.id))
+            ).rows[0];
+            const reserve = (await db.query<Reserve>(queries.get.reserve(ssd.id)))
+                .rows[0];
+            const bait = (await db.query<Bait>(queries.get.bait(ssd.id))).rows[0];
 
-    response.body = ssdInfo;
+            const ssdInfo: SSDInfoSoleT = {
+                ssd,
+                productionDetails: details.rows,
+                productionInput: input,
+                reserve,
+                bait,
+            };
+            resolve(ssdInfo);
+            return ssdInfo;
+        });
+    });
+
+    const ssdInfoList = await Promise.all(ssdInfoListPromises);
+    response.body = ssdInfoList;
 };
 
-export const getVessels = async ({ response }: CtxT) => {
-    const vessels = await db.query(queries.get.vessels);
+export const getVessels = async ({ params, response }: CtxT) => {
+    const vessels = await db.query(queries.get.vessels(params.companyId));
     response.body = vessels.rows;
 };
 
 export const getVesselById = async ({ params, response }: CtxT) => {
     const res = await db.query(queries.get.vessel(params.id));
     response.body = res.rows[0];
-};
-
-export const getSsdByVesselId = async ({ params, response }: CtxT) => {
-    const res = await db.query(queries.get.ssdByVessel(params.id));
-    response.body = res.rows;
 };
 
 // dictionary requests

@@ -21,7 +21,12 @@ export const queries = {
             JOIN catch_zone ON catch_zone.id = ssd.catch_zone_id
         `,
 
-        vessels: `SELECT * FROM vessel`,
+        vessels: (companyId: string) => {
+            if (companyId === 'all') {
+                return `SELECT * FROM vessel`;
+            }
+            return `SELECT * FROM vessel WHERE company_id = '${companyId}'`;
+        },
         vessel: (id: string) => ``,
         ssdByVessel: (id: string) => ``,
 
