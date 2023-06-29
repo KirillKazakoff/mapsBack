@@ -2,6 +2,8 @@
 export type Vessel = {
     id: string;
     name: string;
+    company_id: string;
+    type: string;
 };
 
 export type SSD = {
@@ -12,6 +14,7 @@ export type SSD = {
     agreement_no: string;
     catch_zone_id: string;
     coordinates: string;
+    status: string;
 };
 
 export type ProductionInput = {
@@ -19,6 +22,8 @@ export type ProductionInput = {
     name: string;
     total: number;
 };
+
+export type ProductionTransport = ProductionInput;
 
 export type ProductionDetails = {
     id_ssd: string;
@@ -44,6 +49,7 @@ export type SSDInfoT = {
     ssd: SSD[];
     productionDetails: ProductionDetails[];
     productionInput: ProductionInput[];
+    productionTransport: ProductionTransport[];
     reserve: Reserve[];
     bait: Bait[];
 };

@@ -10,6 +10,6 @@ router.post('/ssd', addSSDInfo);
 router.get('/ssd/:id', getSSDInfoByVesselId);
 
 router.get('/vessels/:companyId', getVessels);
-router.get('/vessels/:id', getVesselById);
+router.get('/vesselsById/:id', getVesselById);
 
 export default router;

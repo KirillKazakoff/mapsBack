@@ -1,4 +1,10 @@
-import { ProductionDetails, ProductionInput, Reserve, SSD } from '../../models/models';
+import {
+    ProductionDetails,
+    ProductionInput,
+    ProductionTransport,
+    Reserve,
+    SSD,
+} from '../../models/models';
 import { Bait } from '../../models/models';
 
 //prettier-ignore
@@ -9,11 +15,13 @@ export const queries = {
             WHERE id_ssd = '${id}'
         `,
         ssd: `SELECT vessel.name AS vessel,
+            vessel.type AS vessel_type,
             company.name AS company,
             catch_zone.name AS catch_zone,
             ssd.date,
             ssd.coordinates,
-            ssd.id
+            ssd.id,
+            ssd.status
                 FROM
             ssd
             JOIN vessel ON vessel.id = ssd.vessel_id
@@ -32,13 +40,15 @@ export const queries = {
 
         productionDetails: (id: string) => ``,
         productionInput: (id: string) => ``,
+        productionTransport: (id: string) => ``,
         bait: (id: string) => ``,
         reserve: (id: string) => ``,
+        
     },
     post: {
         ssd: (ssd: SSD) => `INSERT INTO ssd
-            (id, date, company_id, agreement_no, catch_zone_id, coordinates, vessel_id)
-            values ('${ssd.id}', '${ssd.date}', '${ssd.company_id}', '${ssd.agreement_no}', '${ssd.catch_zone_id}', '${ssd.coordinates}', '${ssd.vessel_id}') 
+            (id, date, company_id, agreement_no, catch_zone_id, coordinates, vessel_id, status)
+            values ('${ssd.id}', '${ssd.date}', '${ssd.company_id}', '${ssd.agreement_no}', '${ssd.catch_zone_id}', '${ssd.coordinates}', '${ssd.vessel_id}', '${ssd.status}') 
         `,
         production_details: (details: ProductionDetails) => `INSERT INTO production_details
             (id_ssd, name, sort, current, total)
@@ -47,6 +57,10 @@ export const queries = {
         production_input: (input: ProductionInput) => `INSERT INTO production_input
             (id_ssd, name, total)
             VALUES ('${input.id_ssd}', '${input.name}', ${input.total})
+        `,
+        production_transport: (transport: ProductionTransport) => `INSERT INTO production_transport
+            (id_ssd, name, total)
+            VALUES ('${transport.id_ssd}', '${transport.name}', ${transport.total})
         `,
         bait: (bait: Bait) => `INSERT INTO bait
             (id_ssd, name, total)    
@@ -70,7 +84,10 @@ queries.get.ssdByVessel = (id: string) => {
     return `${queries.get.ssd} WHERE ssd.vessel_id = '${id}' ORDER BY ssd.date DESC`;
 };
 queries.get.vessel = (id: string) => {
-    return `${queries.get.vessel} WHERE vessel.id = '${id}'`;
+    return `SELECT * FROM vessel WHERE vessel.id = '${id}'`;
+};
+queries.get.productionTransport = (id: string) => {
+    return queries.get.bySSDId('production_transport', id);
 };
 queries.get.productionDetails = (id: string) => {
     return queries.get.bySSDId('production_details', id);

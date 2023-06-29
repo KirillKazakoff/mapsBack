@@ -3,9 +3,11 @@ import {
     Bait,
     ProductionDetails,
     ProductionInput,
+    ProductionTransport,
     Reserve,
     SSD,
     SSDInfoT,
+    Vessel,
 } from '../models/models';
 import db from './db';
 import { queries } from './queriesDb/queries';
@@ -27,6 +29,9 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
     const inputPromises = ssdInfo.productionInput.map(async (input) => {
         await db.query(queries.post.production_input(input));
     });
+    const transportPromises = ssdInfo.productionTransport.map(async (transport) => {
+        await db.query(queries.post.production_transport(transport));
+    });
     const reservePromises = ssdInfo.reserve.map(async (reserve) => {
         await db.query(queries.post.reserve(reserve));
     });
@@ -39,6 +44,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         ...inputPromises,
         ...reservePromises,
         ...baitPromises,
+        ...transportPromises,
     ]);
 
     console.log('made it');
@@ -55,22 +61,28 @@ export const getSSDInfoByVesselId = async ({ params, response }: CtxT) => {
                 return null;
             }
 
-            const details = await db.query<ProductionDetails>(
-                queries.get.productionDetails(ssd.id)
-            );
-            const input = (
+            const productionDetails = (
+                await db.query<ProductionDetails>(queries.get.productionDetails(ssd.id))
+            ).rows;
+            const productionInput = (
                 await db.query<ProductionInput>(queries.get.productionInput(ssd.id))
             ).rows[0];
             const reserve = (await db.query<Reserve>(queries.get.reserve(ssd.id)))
                 .rows[0];
-            const bait = (await db.query<Bait>(queries.get.bait(ssd.id))).rows[0];
+            const bait = (await db.query<Bait>(queries.get.bait(ssd.id))).rows;
+            const productionTransport = (
+                await db.query<ProductionTransport>(
+                    queries.get.productionTransport(ssd.id)
+                )
+            ).rows;
 
             const ssdInfo: SSDInfoSoleT = {
                 ssd,
-                productionDetails: details.rows,
-                productionInput: input,
+                productionDetails,
+                productionInput,
                 reserve,
                 bait,
+                productionTransport,
             };
             resolve(ssdInfo);
             return ssdInfo;
