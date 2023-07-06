@@ -45,6 +45,14 @@ export type Reserve = {
     fuel: number;
 };
 
+export type Coordinates = {
+    vessel_id: string;
+    date: string;
+    coordinates: string;
+    course: number;
+    velocity: number;
+};
+
 export type SSDInfoT = {
     ssd: SSD[];
     productionDetails: ProductionDetails[];

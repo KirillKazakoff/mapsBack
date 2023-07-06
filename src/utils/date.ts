@@ -11,7 +11,7 @@ export const dateDb = {
             .toString();
     },
     toDb: (date: string) => {
-        const dateObj = DateTime.fromFormat(date, 'dd.MM.yyyy');
+        const dateObj = DateTime.fromFormat(date, 'dd.MM.yyyy mm:ss');
         const res = dateObj.toISO();
 
         if (!res) return '';

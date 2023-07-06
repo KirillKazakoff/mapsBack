@@ -1,13 +1,13 @@
 import { CtxT, SSDInfoSoleT } from '../types';
 import {
     Bait,
+    Coordinates,
     ProductionDetails,
     ProductionInput,
     ProductionTransport,
     Reserve,
     SSD,
     SSDInfoT,
-    Vessel,
 } from '../models/models';
 import db from './db';
 import { queries } from './queriesDb/queries';
@@ -48,6 +48,21 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
     ]);
 
     console.log('made it');
+    response.status = 200;
+};
+
+export const updateCoordinates = async ({ request, response }: CtxT) => {
+    const coordinatesArr = <Coordinates[]>request.body;
+    const coordinatePromises = coordinatesArr.map(async (coordinates) => {
+        coordinates.date = dateDb.toDb(coordinates.date);
+        console.log(coordinates);
+        // console.log(coordinates.date);
+
+        await db.query(queries.post.coordinates(coordinates));
+    });
+    await Promise.all(coordinatePromises);
+
+    console.log('updated coordinates');
     response.status = 200;
 };
 

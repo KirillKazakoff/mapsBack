@@ -1,4 +1,5 @@
 import {
+    Coordinates,
     ProductionDetails,
     ProductionInput,
     ProductionTransport,
@@ -35,8 +36,9 @@ export const queries = {
             }
             return `SELECT * FROM vessel WHERE company_id = '${companyId}'`;
         },
-        vessel: (id: string) => ``,
+        
         ssdByVessel: (id: string) => ``,
+        vessel: (id: string) => ``,
 
         productionDetails: (id: string) => ``,
         productionInput: (id: string) => ``,
@@ -69,6 +71,11 @@ export const queries = {
         reserve: (reserve: Reserve) => `INSERT INTO Reserve 
             (id_ssd, water, fuel)
             VALUES ('${reserve.id_ssd}', ${reserve.water}, ${reserve.fuel})
+        `,
+        coordinates: (coordinates: Coordinates) => `UPDATE ssd 
+            SET coordinates = '${coordinates.coordinates}'
+            WHERE vessel_id = '${coordinates.vessel_id}'
+                AND date = '${coordinates.date}' 
         `,
         catch_zones: `INSERT INTO catch_zone 
             (id, NAME)
