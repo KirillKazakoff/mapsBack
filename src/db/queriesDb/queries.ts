@@ -74,9 +74,19 @@ export const queries = {
         `,
         coordinates: (coordinates: Coordinates) => `UPDATE ssd 
             SET coordinates = '${coordinates.coordinates}'
-            WHERE vessel_id = '${coordinates.vessel_id}'
-                AND date = '${coordinates.date}' 
+            WHERE id = (
+                SELECT id FROM ssd 
+                WHERE ssd.vessel_id = '${coordinates.vessel_id}'
+                ORDER BY date
+                LIMIT 1
+            )
         `,
+        // coordinates: (coordinates: Coordinates) => `UPDATE ssd 
+        //     SET coordinates = '${coordinates.coordinates}'
+        //     WHERE vessel_id = '${coordinates.vessel_id}'
+        //         AND date = '${coordinates.date}' 
+        //     ORDER BY 
+        // `,
         catch_zones: `INSERT INTO catch_zone 
             (id, NAME)
             VALUES %L

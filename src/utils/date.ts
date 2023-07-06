@@ -10,8 +10,8 @@ export const dateDb = {
             })
             .toString();
     },
-    toDb: (date: string) => {
-        const dateObj = DateTime.fromFormat(date, 'dd.MM.yyyy mm:ss');
+    toDb: (date: string, format: string) => {
+        const dateObj = DateTime.fromFormat(date, format);
         const res = dateObj.toISO();
 
         if (!res) return '';

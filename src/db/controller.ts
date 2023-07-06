@@ -18,7 +18,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
     const ssdInfo = <SSDInfoT>request.body;
 
     const ssdPromises = ssdInfo.ssd.map(async (ssd) => {
-        ssd.date = dateDb.toDb(ssd.date);
+        ssd.date = dateDb.toDb(ssd.date, 'dd.MM.yyyy');
         await db.query(queries.post.ssd(ssd));
     });
     await Promise.all(ssdPromises);
@@ -54,7 +54,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
 export const updateCoordinates = async ({ request, response }: CtxT) => {
     const coordinatesArr = <Coordinates[]>request.body;
     const coordinatePromises = coordinatesArr.map(async (coordinates) => {
-        coordinates.date = dateDb.toDb(coordinates.date);
+        coordinates.date = dateDb.toDb(coordinates.date, 'dd.MM.yyyy mm:ss');
         console.log(coordinates);
         // console.log(coordinates.date);
 
