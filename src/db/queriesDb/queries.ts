@@ -54,7 +54,7 @@ export const queries = {
         `,
         production_details: (details: ProductionDetails) => `INSERT INTO production_details
             (id_ssd, name, sort, current, total)
-            VALUES ('${details.id_ssd}', '${details.name}', '${details.sort}', ${details.current}, ${details.total} )
+            VALUES ('${details.id_ssd}', '${details.name}', '${details.sort}', '${details.current}', '${details.total}' )
         `,
         production_input: (input: ProductionInput) => `INSERT INTO production_input
             (id_ssd, name, total)

@@ -15,7 +15,17 @@ import pgFormat from 'pg-format';
 import { dateDb } from '../utils/date';
 
 export const addSSDInfo = async ({ request, response }: CtxT) => {
+    console.log('receiving data from osm service');
     const ssdInfo = <SSDInfoT>request.body;
+
+    console.log(
+        ssdInfo.ssd
+            .map((ssd) => ssd.id)
+            .sort((a, b) => {
+                if (a > b) return 1;
+                return -1;
+            })
+    );
 
     const ssdPromises = ssdInfo.ssd.map(async (ssd) => {
         ssd.date = dateDb.toDb(ssd.date, 'dd.MM.yyyy');
@@ -47,7 +57,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         ...transportPromises,
     ]);
 
-    console.log('made it');
+    console.log('success');
     response.status = 200;
 };
 

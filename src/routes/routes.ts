@@ -10,7 +10,6 @@ router.post('/ssd', addSSDInfo);
 router.get('/ssd/:id', getSSDInfoByVesselId);
 
 router.post('/coordinates', updateCoordinates);
-
 router.get('/vessels/:companyId', getVessels);
 router.get('/vesselsById/:id', getVesselById);
 
