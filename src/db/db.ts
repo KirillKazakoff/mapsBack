@@ -1,15 +1,6 @@
-import { Pool } from 'pg';
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
 
-const db = new Pool({
-    user: 'kirillkazakov',
-    password: 'root',
-    host: 'localhost',
-    port: 5432,
-    database: 'postgres',
-});
-
-db.on('error', (err, client) => {
-    process.exit();
-});
+const db = drizzle(process.env.DATABASE_URL!, { logger: true });
 
 export default db;

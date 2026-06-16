@@ -16,6 +16,7 @@
         "transpileOnly": false
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "drizzle.config.ts"
     ],
 }

@@ -80,7 +80,7 @@ export const queries = {
                 ORDER BY date
                 LIMIT 1
             )
-        `,
+        `, 
         // coordinates: (coordinates: Coordinates) => `UPDATE ssd 
         //     SET coordinates = '${coordinates.coordinates}'
         //     WHERE vessel_id = '${coordinates.vessel_id}'
