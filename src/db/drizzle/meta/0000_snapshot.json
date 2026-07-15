@@ -4,96 +4,30 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.T_ProductTransported": {
-      "name": "T_ProductTransported",
+    "public.t_ssd": {
+      "name": "t_ssd",
       "schema": "",
       "columns": {
-        "ID": {
-          "name": "ID",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "ID_ssd": {
-          "name": "ID_ssd",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ID_product": {
-          "name": "ID_product",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "amount": {
-          "name": "amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "ProductTransported_ID_ssd_fkey": {
-          "name": "ProductTransported_ID_ssd_fkey",
-          "tableFrom": "T_ProductTransported",
-          "tableTo": "T_SSD",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "ID_ssd"
-          ],
-          "columnsTo": [
-            "ID_ssd"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "ProductTransported_ID_product_fkey": {
-          "name": "ProductTransported_ID_product_fkey",
-          "tableFrom": "T_ProductTransported",
-          "tableTo": "SP_Product",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "ID_product"
-          ],
-          "columnsTo": [
-            "ID_product"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.T_SSD": {
-      "name": "T_SSD",
-      "schema": "",
-      "columns": {
-        "ID_ssd": {
-          "name": "ID_ssd",
+        "id_ssd": {
+          "name": "id_ssd",
           "type": "text",
           "primaryKey": true,
           "notNull": true
         },
-        "ID_vessel": {
-          "name": "ID_vessel",
+        "id_vessel": {
+          "name": "id_vessel",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "ID_zone_current": {
-          "name": "ID_zone_current",
+        "id_zone_current": {
+          "name": "id_zone_current",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "ID_zone_arrival": {
-          "name": "ID_zone_arrival",
+        "id_zone_arrival": {
+          "name": "id_zone_arrival",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -119,30 +53,30 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "SSD_ID_zone_current_fkey": {
-          "name": "SSD_ID_zone_current_fkey",
-          "tableFrom": "T_SSD",
-          "tableTo": "SP_Subzone",
+        "SSD_ID_zone_arrival_fkey": {
+          "name": "SSD_ID_zone_arrival_fkey",
+          "tableFrom": "t_ssd",
+          "tableTo": "sp_subzone",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_zone_current"
+            "id_zone_arrival"
           ],
           "columnsTo": [
-            "ID_subzone"
+            "id_subzone"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "SSD_ID_zone_arrival_fkey": {
-          "name": "SSD_ID_zone_arrival_fkey",
-          "tableFrom": "T_SSD",
-          "tableTo": "SP_Subzone",
+        "SSD_ID_zone_current_fkey": {
+          "name": "SSD_ID_zone_current_fkey",
+          "tableFrom": "t_ssd",
+          "tableTo": "sp_subzone",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_zone_arrival"
+            "id_zone_current"
           ],
           "columnsTo": [
-            "ID_subzone"
+            "id_subzone"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -154,24 +88,24 @@
       "policies": {},
       "isRLSEnabled": false
     },
-    "public.T_Catch": {
-      "name": "T_Catch",
+    "public.t_catch": {
+      "name": "t_catch",
       "schema": "",
       "columns": {
-        "ID_ssd": {
-          "name": "ID_ssd",
+        "id_ssd": {
+          "name": "id_ssd",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "ID_subzone": {
-          "name": "ID_subzone",
+        "id_subzone": {
+          "name": "id_subzone",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "ID_vbr": {
-          "name": "ID_vbr",
+        "id_vbr": {
+          "name": "id_vbr",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -182,8 +116,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "ID": {
-          "name": "ID",
+        "id": {
+          "name": "id",
           "type": "serial",
           "primaryKey": true,
           "notNull": true
@@ -199,56 +133,56 @@
       "foreignKeys": {
         "t_catch_sp_company_fk": {
           "name": "t_catch_sp_company_fk",
-          "tableFrom": "T_Catch",
-          "tableTo": "SP_Company",
+          "tableFrom": "t_catch",
+          "tableTo": "sp_company",
           "schemaTo": "public",
           "columnsFrom": [
             "id_quote"
           ],
           "columnsTo": [
-            "ID_company"
+            "id_company"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
         "t_catch_sp_subzone_fk": {
           "name": "t_catch_sp_subzone_fk",
-          "tableFrom": "T_Catch",
-          "tableTo": "SP_Subzone",
+          "tableFrom": "t_catch",
+          "tableTo": "sp_subzone",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_subzone"
+            "id_subzone"
           ],
           "columnsTo": [
-            "ID_subzone"
+            "id_subzone"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
         "t_catch_sp_vbr_fk": {
           "name": "t_catch_sp_vbr_fk",
-          "tableFrom": "T_Catch",
-          "tableTo": "SP_Vbr",
+          "tableFrom": "t_catch",
+          "tableTo": "sp_vbr",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_vbr"
+            "id_vbr"
           ],
           "columnsTo": [
-            "ID_vbr"
+            "id_vbr"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
         "ID_ssd": {
           "name": "ID_ssd",
-          "tableFrom": "T_Catch",
-          "tableTo": "T_SSD",
+          "tableFrom": "t_catch",
+          "tableTo": "t_ssd",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_ssd"
+            "id_ssd"
           ],
           "columnsTo": [
-            "ID_ssd"
+            "id_ssd"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -260,198 +194,12 @@
       "policies": {},
       "isRLSEnabled": false
     },
-    "public.T_Product": {
-      "name": "T_Product",
+    "public.sp_subzone": {
+      "name": "sp_subzone",
       "schema": "",
       "columns": {
-        "ID_product": {
-          "name": "ID_product",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ID_ssd": {
-          "name": "ID_ssd",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ID_subzone": {
-          "name": "ID_subzone",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ID_vbr": {
-          "name": "ID_vbr",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "amount": {
-          "name": "amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id_quote": {
-          "name": "id_quote",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "Product_ID_subzone_fkey": {
-          "name": "Product_ID_subzone_fkey",
-          "tableFrom": "T_Product",
-          "tableTo": "SP_Subzone",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "ID_subzone"
-          ],
-          "columnsTo": [
-            "ID_subzone"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "Product_ID_vbr_fkey": {
-          "name": "Product_ID_vbr_fkey",
-          "tableFrom": "T_Product",
-          "tableTo": "SP_Vbr",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "ID_vbr"
-          ],
-          "columnsTo": [
-            "ID_vbr"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "t_product_t_ssd_fk": {
-          "name": "t_product_t_ssd_fk",
-          "tableFrom": "T_Product",
-          "tableTo": "T_SSD",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "ID_ssd"
-          ],
-          "columnsTo": [
-            "ID_ssd"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "t_product_sp_company_fk": {
-          "name": "t_product_sp_company_fk",
-          "tableFrom": "T_Product",
-          "tableTo": "SP_Company",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_quote"
-          ],
-          "columnsTo": [
-            "ID_company"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.SP_Company": {
-      "name": "SP_Company",
-      "schema": "",
-      "columns": {
-        "ID_company": {
-          "name": "ID_company",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name_rus": {
-          "name": "name_rus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name_eng": {
-          "name": "name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "group": {
-          "name": "group",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.SP_Vbr": {
-      "name": "SP_Vbr",
-      "schema": "",
-      "columns": {
-        "ID_vbr": {
-          "name": "ID_vbr",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name_rus": {
-          "name": "name_rus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name_eng": {
-          "name": "name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "group": {
-          "name": "group",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.SP_Subzone": {
-      "name": "SP_Subzone",
-      "schema": "",
-      "columns": {
-        "ID_subzone": {
-          "name": "ID_subzone",
+        "id_subzone": {
+          "name": "id_subzone",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
@@ -497,8 +245,8 @@
       "foreignKeys": {
         "sp_subzone_sp_zone_fk": {
           "name": "sp_subzone_sp_zone_fk",
-          "tableFrom": "SP_Subzone",
-          "tableTo": "SP_Zone",
+          "tableFrom": "sp_subzone",
+          "tableTo": "sp_zone",
           "schemaTo": "public",
           "columnsFrom": [
             "id_zone"
@@ -516,12 +264,354 @@
       "policies": {},
       "isRLSEnabled": false
     },
-    "public.SP_Product": {
-      "name": "SP_Product",
+    "public.sp_vbr": {
+      "name": "sp_vbr",
       "schema": "",
       "columns": {
-        "ID_product": {
-          "name": "ID_product",
+        "id_vbr": {
+          "name": "id_vbr",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name_rus": {
+          "name": "name_rus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_eng": {
+          "name": "name_eng",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group": {
+          "name": "group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.sp_zone": {
+      "name": "sp_zone",
+      "schema": "",
+      "columns": {
+        "id_zone": {
+          "name": "id_zone",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name_rus": {
+          "name": "name_rus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_eng": {
+          "name": "name_eng",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.sp_company": {
+      "name": "sp_company",
+      "schema": "",
+      "columns": {
+        "id_company": {
+          "name": "id_company",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name_rus": {
+          "name": "name_rus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_eng": {
+          "name": "name_eng",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group": {
+          "name": "group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.sp_vessel": {
+      "name": "sp_vessel",
+      "schema": "",
+      "columns": {
+        "id_vessel": {
+          "name": "id_vessel",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_rus": {
+          "name": "name_rus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_eng": {
+          "name": "name_eng",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_company": {
+          "name": "id_company",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sp_vessel_sp_company_fk": {
+          "name": "sp_vessel_sp_company_fk",
+          "tableFrom": "sp_vessel",
+          "tableTo": "sp_company",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_company"
+          ],
+          "columnsTo": [
+            "id_company"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.t_product": {
+      "name": "t_product",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "nextval('\"T_Product_id_seq\"'::regclass)"
+        },
+        "id_ssd": {
+          "name": "id_ssd",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_subzone": {
+          "name": "id_subzone",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_vbr": {
+          "name": "id_vbr",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_quote": {
+          "name": "id_quote",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_product": {
+          "name": "id_product",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Product_ID_subzone_fkey": {
+          "name": "Product_ID_subzone_fkey",
+          "tableFrom": "t_product",
+          "tableTo": "sp_subzone",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_subzone"
+          ],
+          "columnsTo": [
+            "id_subzone"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Product_ID_vbr_fkey": {
+          "name": "Product_ID_vbr_fkey",
+          "tableFrom": "t_product",
+          "tableTo": "sp_vbr",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_vbr"
+          ],
+          "columnsTo": [
+            "id_vbr"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "t_product_sp_company_fk": {
+          "name": "t_product_sp_company_fk",
+          "tableFrom": "t_product",
+          "tableTo": "sp_company",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_quote"
+          ],
+          "columnsTo": [
+            "id_company"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "t_product_t_ssd_fk": {
+          "name": "t_product_t_ssd_fk",
+          "tableFrom": "t_product",
+          "tableTo": "t_ssd",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_ssd"
+          ],
+          "columnsTo": [
+            "id_ssd"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.t_product_transported": {
+      "name": "t_product_transported",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_ssd": {
+          "name": "id_ssd",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_product": {
+          "name": "id_product",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProductTransported_ID_product_fkey": {
+          "name": "ProductTransported_ID_product_fkey",
+          "tableFrom": "t_product_transported",
+          "tableTo": "sp_product",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_product"
+          ],
+          "columnsTo": [
+            "id_product"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProductTransported_ID_ssd_fkey": {
+          "name": "ProductTransported_ID_ssd_fkey",
+          "tableFrom": "t_product_transported",
+          "tableTo": "t_ssd",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "id_ssd"
+          ],
+          "columnsTo": [
+            "id_ssd"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.sp_product": {
+      "name": "sp_product",
+      "schema": "",
+      "columns": {
+        "id_product": {
+          "name": "id_product",
           "type": "integer",
           "primaryKey": true,
           "notNull": true
@@ -567,14 +657,14 @@
       "foreignKeys": {
         "sp_product_sp_vbr_fk": {
           "name": "sp_product_sp_vbr_fk",
-          "tableFrom": "SP_Product",
-          "tableTo": "SP_Vbr",
+          "tableFrom": "sp_product",
+          "tableTo": "sp_vbr",
           "schemaTo": "public",
           "columnsFrom": [
             "ID_vbr"
           ],
           "columnsTo": [
-            "ID_vbr"
+            "id_vbr"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -586,107 +676,18 @@
       "policies": {},
       "isRLSEnabled": false
     },
-    "public.SP_Zone": {
-      "name": "SP_Zone",
+    "public.t_fuel_reserve": {
+      "name": "t_fuel_reserve",
       "schema": "",
       "columns": {
-        "id_zone": {
-          "name": "id_zone",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name_rus": {
-          "name": "name_rus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name_eng": {
-          "name": "name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.SP_Vessel": {
-      "name": "SP_Vessel",
-      "schema": "",
-      "columns": {
-        "id_vessel": {
-          "name": "id_vessel",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name_rus": {
-          "name": "name_rus",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name_eng": {
-          "name": "name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "id_company": {
-          "name": "id_company",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "id": {
           "name": "id",
-          "type": "varchar",
-          "primaryKey": true,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "sp_vessel_sp_company_fk": {
-          "name": "sp_vessel_sp_company_fk",
-          "tableFrom": "SP_Vessel",
-          "tableTo": "SP_Company",
-          "schemaTo": "public",
-          "columnsFrom": [
-            "id_company"
-          ],
-          "columnsTo": [
-            "ID_company"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.T_FuelReserve": {
-      "name": "T_FuelReserve",
-      "schema": "",
-      "columns": {
-        "ID": {
-          "name": "ID",
           "type": "serial",
           "primaryKey": false,
           "notNull": true
         },
-        "ID_ssd": {
-          "name": "ID_ssd",
+        "Id_ssd": {
+          "name": "Id_ssd",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -708,14 +709,14 @@
       "foreignKeys": {
         "FuelReserve_ID_ssd_fkey": {
           "name": "FuelReserve_ID_ssd_fkey",
-          "tableFrom": "T_FuelReserve",
-          "tableTo": "T_SSD",
+          "tableFrom": "t_fuel_reserve",
+          "tableTo": "t_ssd",
           "schemaTo": "public",
           "columnsFrom": [
-            "ID_ssd"
+            "Id_ssd"
           ],
           "columnsTo": [
-            "ID_ssd"
+            "id_ssd"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -725,8 +726,8 @@
         "FuelReserve_pkey": {
           "name": "FuelReserve_pkey",
           "columns": [
-            "ID_ssd",
-            "ID"
+            "id",
+            "Id_ssd"
           ]
         }
       },
@@ -738,7 +739,18 @@
   },
   "enums": {},
   "schemas": {},
-  "sequences": {},
+  "sequences": {
+    "public.T_Product_id_seq": {
+      "name": "T_Product_id_seq",
+      "schema": "public",
+      "startWith": "1",
+      "minValue": "1",
+      "maxValue": "9223372036854775807",
+      "increment": "1",
+      "cycle": false,
+      "cache": "1"
+    }
+  },
   "roles": {},
   "policies": {},
   "views": {},
@@ -748,6 +760,14 @@
     "columns": {}
   },
   "internal": {
-    "tables": {}
+    "tables": {
+      "t_product": {
+        "columns": {
+          "id": {
+            "isDefaultAnExpression": true
+          }
+        }
+      }
+    }
   }
 }

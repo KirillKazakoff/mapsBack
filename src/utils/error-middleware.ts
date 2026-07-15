@@ -58,3 +58,45 @@ export async function drizzleErrorMiddleware(ctx: Context, next: Next) {
         throw error;
     }
 }
+
+// // try {
+// await db.transaction(async (tx) => {
+//     for (const batch of toDbChunks.info) {
+//         await tx.insert(tSsd).values(batch);
+//     }
+// });
+// // } catch (error: unknown) {
+// //     if (error instanceof DrizzleQueryError) {
+// //         console.error('❌ Запрос Drizzle завершился ошибкой!');
+// //         console.error('SQL-текст запроса:', error.message); // Покажет сам SQL
+
+// //         // Настоящая ошибка СУБД (PostgreSQL / MySQL / SQLite) лежит здесь:
+// //         const dbError = error.cause as any;
+
+// //         if (dbError) {
+// //             console.error('👉 Конкретная причина ошибки:', dbError.message);
+// //             console.error('Код ошибки СУБД (SQLState):', dbError.code); // Например, '23505'
+// //             console.error('Детали СУБД:', dbError.detail); // Например, 'Key (ID_ssd)=(...) already exists'
+// //         }
+// //     } else {
+// //         // Системные ошибки Node.js (например, Stack Overflow или обрыв сети)
+// //         console.error('Нетипичная ошибка:', error);
+// //     }
+// // }
+// // try {
+// //     // await db.transaction(async (tx) => {
+// //     //     for (const batch of toDbChunks.info) {
+// //     //         await tx.insert(tSsd).values(batch);
+// //     //     }
+// //     // });
+// // } catch (error: any) {
+// //     console.log('=== ПОДРОБНАЯ ИНФОРМАЦИЯ ОБ ОШИБКЕ ===');
+
+// //     // Показывает абсолютно все скрытые свойства объекта ошибки
+// //     console.dir(error, { depth: null });
+
+// //     // Если ошибка пришла из драйвера БД (pg/postgres), у неё будут эти скрытые поля:
+// //     if (error.detail) console.error('Детали СУБД:', error.detail); // Например: "Key (id)=(1) already exists"
+// //     if (error.code) console.error('Код ошибки PostgreSQL:', error.code); // Например: "23505"
+// //     if (error.hint) console.error('Подсказка базы:', error.hint);
+// // }
