@@ -17,4 +17,9 @@ export const dateDb = {
         if (!res) return '';
         return res;
     },
+    dateNow: () => {
+        const dateString = new Date(Date.now()).toLocaleString();
+
+        return 'DATE: ' + dateString;
+    },
 };

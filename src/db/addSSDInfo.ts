@@ -4,19 +4,21 @@ import {
     tCatch,
     spVessel,
     tSsd,
+    tFuelReserve,
+    tProductTransported,
     tProduct,
     spVbr,
     spProduct,
     spCompany,
     spSubzone,
 } from './drizzle/schema';
-import { eq } from 'drizzle-orm';
 import { groupTotal } from '../utils/groupify/groupTotal';
 import { chunk } from 'lodash';
 import { bot } from './bot';
+import { dateDb } from '../utils/date';
 
 export const addSSDInfo = async ({ request, response }: CtxT) => {
-    console.log('start ssd add');
+    bot.logDate('transfer SSD to DB');
 
     const sp = {
         vbr: await db.select().from(spVbr),
@@ -55,6 +57,8 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         info: (typeof tSsd.$inferInsert)[];
         input: (typeof tCatch.$inferInsert)[];
         output: (typeof tProduct.$inferInsert)[];
+        outputBoard: (typeof tProductTransported.$inferInsert)[];
+        fuelReserve: (typeof tFuelReserve.$inferInsert)[];
     }>(
         (total, ssdInput: SSDT) => {
             const { info, production } = ssdInput;
@@ -141,7 +145,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                 return id;
             };
 
-            // Output current
+            // Output current (за сутки)
             const prodOutputRecords = production.output.current.map((o) => {
                 const id = getIDOutput(o);
 
@@ -156,7 +160,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                 } as typeof tProduct.$inferInsert & { coef: number };
             });
 
-            //Output board
+            //Output board (за год)
             const prodOutputBoardRecords = production.output.board.map((o) => {
                 const id = getIDOutput(o);
 
@@ -252,13 +256,15 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
             total.info.push(ssdInfoToDB);
             total.output.push(...outputToDB);
             total.input.push(...inputToDB);
+            total.outputBoard.push(...prodOutputBoardRecords);
+            // total.fuelReserve.push(reserve)
 
             return total;
         },
-        { info: [], output: [], input: [] }
+        { info: [], output: [], input: [], outputBoard: [], fuelReserve: [] }
     );
 
-    // send to db
+    // send to db data divided on chunks
     const chunkSize = 50;
     const toDbChunks = {
         info: chunk(toDB.info, chunkSize),
@@ -282,28 +288,29 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         }
     });
 
+    console.log(dateDb.dateNow());
     bot.log(JSON.stringify(errorObj, null, 2));
     response.status = 200;
 };
 
-export const insertVessel = async ({ request, response }: CtxT) => {
-    const vessel: typeof spVessel.$inferInsert = {
-        idCompany: 1381,
-        idVessel: 1111,
-        id: '1381-1111',
-        nameRus: 'ДЕБАГ',
-        nameEng: 'DEBUG',
-    };
+// export const insertVessel = async ({ request, response }: CtxT) => {
+//     const vessel: typeof spVessel.$inferInsert = {
+//         idCompany: 1381,
+//         idVessel: 1111,
+//         id: '1381-1111',
+//         nameRus: 'ДЕБАГ',
+//         nameEng: 'DEBUG',
+//     };
 
-    try {
-        await db.insert(spVessel).values(vessel);
-    } catch (e: any) {
-        console.log(e.message);
-    }
+//     try {
+//         await db.insert(spVessel).values(vessel);
+//     } catch (e: any) {
+//         console.log(e.message);
+//     }
 
-    response.status = 200;
-};
+//     response.status = 200;
+// };
 
-export const deleteVessel = async ({ request, response }: CtxT) => {
-    await db.delete(spVessel).where(eq(spVessel.idVessel, 1111));
-};
+// export const deleteVessel = async ({ request, response }: CtxT) => {
+//     await db.delete(spVessel).where(eq(spVessel.idVessel, 1111));
+// };

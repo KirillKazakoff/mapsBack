@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { readEnv } from '../readEnv';
+import { dateDb } from '../utils/date';
 
 readEnv();
 
@@ -11,6 +12,10 @@ const api = new TelegramBot(token, { polling: true });
 export const bot = {
     log: (message: string) => {
         api.sendMessage(chatID, message);
+    },
+    logDate: (message: string) => {
+        const fullMsg = `${dateDb.dateNow()}\n${message}`;
+        api.sendMessage(chatID, fullMsg);
     },
 };
 

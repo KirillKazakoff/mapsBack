@@ -4,6 +4,7 @@ import koaBody from 'koa-body';
 import cors from '@koa/cors';
 import { drizzleErrorMiddleware } from './utils/error-middleware';
 import { readEnv, environment } from './readEnv';
+import { bot } from './db/bot';
 
 readEnv();
 
@@ -30,4 +31,4 @@ server.on('error', (e: any) => {
     console.log(e.message);
 });
 
-console.log(`backend server is working... / status: ${environment}`);
+bot.logDate(`backend server is working... \nstatus: ${environment}`);
