@@ -9,6 +9,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+drizzleOld
+drizzle
+
 # Runtime data
 pids
 *.pid
@@ -91,3 +94,6 @@ Thumbs.db:encryptable
 
 public
 /remote-debug-profile
+
+/f10.json
+/f10.xml

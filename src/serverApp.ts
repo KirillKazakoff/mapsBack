@@ -32,3 +32,4 @@ server.on('error', (e: any) => {
 });
 
 bot.logDate(`backend server is working... \nstatus: ${environment}`);
+console.log(`backend server is working... \nstatus: ${environment}`);

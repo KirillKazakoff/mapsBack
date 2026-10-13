@@ -4,20 +4,22 @@ import {
     tCatch,
     spVessel,
     tSsd,
-    tFuelReserve,
     tProductTransported,
     tProduct,
     spVbr,
     spProduct,
     spCompany,
     spSubzone,
-} from './drizzle/schema';
+} from '../drizzle/schema';
 import { groupTotal } from '../utils/groupify/groupTotal';
 import { chunk } from 'lodash';
 import { bot } from './bot';
 import { dateDb } from '../utils/date';
+import { sql } from 'drizzle-orm';
 
 export const addSSDInfo = async ({ request, response }: CtxT) => {
+    const isDisableTriggers = request.query.disableTriggers === 'true';
+
     bot.logDate('transfer SSD to DB');
 
     const sp = {
@@ -44,10 +46,13 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         return total;
     }, []);
 
+    //debug
+    const lastSsd = ssdInputArray[ssdInputArray.length - 1];
+    console.log(lastSsd.production.input);
+
     const fnCheck = (checkErrorArray: any[]) => {
-        checkErrorArray.forEach(([currentId, e, sourceId]) => {
-            const errorArray = e as any[];
-            if (currentId === 0 && sourceId && !errorArray.includes(+sourceId)) {
+        checkErrorArray.forEach(([isFound, errorArray, sourceId]) => {
+            if (!isFound && sourceId && !errorArray.includes(+sourceId)) {
                 errorArray.push(+sourceId);
             }
         });
@@ -58,7 +63,6 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         input: (typeof tCatch.$inferInsert)[];
         output: (typeof tProduct.$inferInsert)[];
         outputBoard: (typeof tProductTransported.$inferInsert)[];
-        fuelReserve: (typeof tFuelReserve.$inferInsert)[];
     }>(
         (total, ssdInput: SSDT) => {
             const { info, production } = ssdInput;
@@ -67,47 +71,66 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
             // check occurence in sp if no then set 0 in new db record
             // prettier-ignore
             const id = {
-                vessel: sp.vessel.find((v) => v.idVessel === +info.vessel_id)?.idVessel || 0,
-                company: sp.company.find((c) => c.idCompany === +info.company_id)?.idCompany || 0,
-                zoneCurrent: sp.zone.find((z) => z.idSubzone === +info.status.placeId)?.idSubzone || 0,
-                zoneArrival: info.status.destination.placeId ? sp.zone.find((z) => z.idSubzone === +info.status.destination.placeId)?.idSubzone || 0 : null,
+                vessel: +info.vessel_id,
+                company: +info.company_id,
+                zoneCurrent: +info.status.placeId,
+                zoneArrival: info.status.destination.placeId ? +info.status.destination.placeId : null,
             };
-
+            // Ищем, есть ли id из ссд в справочниках (true / false)
+            const isFound = {
+                vessel: sp.vessel.some((v) => v.idVessel === id.vessel),
+                company: sp.company.some((c) => c.idCompany === id.company),
+                zoneCurrent: sp.zone.some((z) => z.idSubzone === id.zoneCurrent),
+                zoneArrival: id.zoneArrival
+                    ? sp.zone.some((z) => z.idSubzone === id.zoneArrival)
+                    : true,
+            };
+            // Блок проверки
             const checkErrorArray = [
-                [id.vessel, errorObj.vessel, info.vessel_id],
-                [id.company, errorObj.company, info.company_id],
-                [id.zoneCurrent, errorObj.zone, info.status.placeId],
-                [id.zoneArrival, errorObj.zone, info.status.destination.placeId],
+                [isFound.vessel, errorObj.vessel, info.vessel_id],
+                [isFound.company, errorObj.company, info.company_id],
+                [isFound.zoneCurrent, errorObj.zone, info.status.placeId],
+                [isFound.zoneArrival, errorObj.zone, info.status.destination.placeId],
             ];
             fnCheck(checkErrorArray);
 
             const ssdInfoToDB: typeof tSsd.$inferInsert = {
+                idSsd: info.id,
                 idVessel: id.vessel,
                 idCompany: id.company,
-                idSsd: info.id,
-                dateSsd: info.date,
                 idZoneCurrent: id.zoneCurrent,
                 idZoneArrival: id.zoneArrival,
                 coordinates: info.coordinates,
                 dateArrival: info.status.destination.eta || null,
+                dateSsd: info.date,
+                status: info.status.main || 'НЕ ОПРЕДЕЛЕНО',
             };
 
             // --- БЛОК 2: PRODUCTION INPUT (Вылов) ---
             const inputToDB = production.input.map((i) => {
-                // check occurence in sp if no then set 0 in new db record
-                // prettier-ignore
+                // 1. Берем оригинальные ID из входных данных
                 const id = {
-                    vbr: sp.vbr.find((v) => v.idVbr === i.id)?.idVbr || 0,
-                    subzone: sp.zone.find((z) => z.idSubzone === i.idSubzone)?.idSubzone || 0,
-                    quote: sp.company.find((c) => c.idCompany === i.idQuote)?.idCompany || 0,
-                }
+                    vbr: +i.id,
+                    subzone: +i.idSubzone,
+                    quote: +i.idQuote,
+                };
+
+                // 2. Засовываем проверки в один объект isFound
+                const isFound = {
+                    vbr: sp.vbr.some((v) => v.idVbr === id.vbr),
+                    subzone: sp.zone.some((z) => z.idSubzone === id.subzone),
+                    quote: sp.company.some((c) => c.idCompany === id.quote),
+                };
+
+                // 3. Передаем флаги в fnCheck для сбора ошибок
                 const checkErrorArray = [
-                    [id.vbr, errorObj.vbr, i.id],
-                    [id.subzone, errorObj.zone, i.idSubzone],
-                    [id.quote, errorObj.company, i.idQuote],
+                    [isFound.vbr, errorObj.vbr, i.id],
+                    [isFound.subzone, errorObj.zone, i.idSubzone],
+                    [isFound.quote, errorObj.company, i.idQuote],
                 ];
                 fnCheck(checkErrorArray);
 
+                // 4. Возвращаем объект для вставки в БД
                 return {
                     idSsd: ssdInfoToDB.idSsd,
                     idVbr: id.vbr,
@@ -128,17 +151,29 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
 
             // --- БЛОК 3: PRODUCTION OUTPUT (Выпуск продукции) ---
             const getIDOutput = (o: ProductionOutputT) => {
+                // 1. Берем оригинальные ID из входных данных
+                // Для vbr ищем оригинальный ID в справочнике sp.prod по idProduct
+                const foundProd = sp.prod.find((p) => p.idProduct === +o.idProduct);
+
                 const id = {
-                    prod: sp.prod.find((p) => p.idProduct === o.idProduct)?.idProduct || 0,
-                    vbr: sp.prod.find((p) => p.idProduct === o.idProduct)?.idVbr || 0,
-                    subzone: sp.zone.find((z) => z.idSubzone === o.idSubzone)?.idSubzone || 0,
-                    quote: sp.company.find((c) => c.idCompany === o.idQuote)?.idCompany || 0,
+                    prod: +o.idProduct || 0,
+                    vbr: foundProd && foundProd.idVbr ? Number(foundProd.idVbr) : 0,
+                    subzone: +o.idSubzone || 0,
+                    quote: +o.idQuote || 0,
                 };
 
+                // 2. Засовываем проверки наличия в один объект isFound
+                const isFound = {
+                    prod: sp.prod.some((p) => p.idProduct === id.prod),
+                    subzone: sp.zone.some((z) => z.idSubzone === id.subzone),
+                    quote: sp.company.some((c) => c.idCompany === id.quote),
+                };
+
+                // 3. Передаем флаги в fnCheck для сбора ошибок справочников
                 const checkErrorArray = [
-                    [id.prod, errorObj.product, o.idProduct],
-                    [id.subzone, errorObj.zone, o.idSubzone],
-                    [id.quote, errorObj.company, o.idQuote],
+                    [isFound.prod, errorObj.product, o.idProduct],
+                    [isFound.subzone, errorObj.zone, o.idSubzone],
+                    [isFound.quote, errorObj.company, o.idQuote],
                 ];
                 fnCheck(checkErrorArray);
 
@@ -153,14 +188,13 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                     idProduct: id.prod,
                     idSsd: ssdInfoToDB.idSsd,
                     idVbr: id.vbr,
-                    amount: o.total,
+                    amount: +o.total || 0,
                     idSubzone: id.subzone,
                     idQuote: id.quote,
-                    coef: o.coefficient,
                 } as typeof tProduct.$inferInsert & { coef: number };
             });
 
-            //Output board (за год)
+            //Output board (суммарно на борту)
             const prodOutputBoardRecords = production.output.board.map((o) => {
                 const id = getIDOutput(o);
 
@@ -168,8 +202,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                     idProduct: id.prod,
                     idSsd: ssdInfoToDB.idSsd,
                     idVbr: id.vbr,
-                    amount: o.total,
-                    coef: o.coefficient,
+                    amount: +o.total || 0,
                 };
             });
 
@@ -183,7 +216,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
 
             // MATCH ID SUBZONE QUOTES
             // outputToDB - массив формирующийся для отправки в БД
-            let outputToDB: (typeof tProduct.$inferInsert & { coef: number })[] = [];
+            let outputToDB: (typeof tProduct.$inferInsert)[] = [];
 
             if (!production.isLive) {
                 outputToDB = groupedOutputVbr.reduce<typeof outputToDB>(
@@ -191,7 +224,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                     (total, groupOutput) => {
                         groupOutput.rows.sort((a, b) => b.amount - a.amount);
 
-                        console.log('non-live production');
+                        // console.log('non-live production');
 
                         groupOutput.rows.forEach((outputRecord, i) => {
                             // add counter on case different vbr
@@ -221,7 +254,7 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
             const isEmptyProduction = groupedInput.length > 0 && outputToDB.length === 0;
 
             if (isEmptyProduction || production.isLive) {
-                console.log('live or empty');
+                // console.log('live or empty');
 
                 outputToDB = inputToDB.map((input) => {
                     const o = prodOutputBoardRecords.find((o) => o.idVbr === input.idVbr);
@@ -234,7 +267,6 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
                         amount: input.amount,
                         idSubzone: input.idSubzone,
                         idQuote: input.idQuote,
-                        coef: o?.coef,
                     } as typeof tProduct.$inferInsert & { coef: number };
                 });
             }
@@ -257,11 +289,10 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
             total.output.push(...outputToDB);
             total.input.push(...inputToDB);
             total.outputBoard.push(...prodOutputBoardRecords);
-            // total.fuelReserve.push(reserve)
 
             return total;
         },
-        { info: [], output: [], input: [], outputBoard: [], fuelReserve: [] }
+        { info: [], output: [], input: [], outputBoard: [] }
     );
 
     // send to db data divided on chunks
@@ -270,21 +301,40 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
         info: chunk(toDB.info, chunkSize),
         input: chunk(toDB.input, chunkSize),
         output: chunk(toDB.output, chunkSize),
+        outputBoard: chunk(toDB.outputBoard, chunkSize),
     };
 
     await db.transaction(async (tx) => {
+        // 1. Если передан флаг, отключаем триггеры в самом начале
+        if (isDisableTriggers) {
+            console.log('🛑 Временно отключаем триггеры для ускорения...');
+            await tx.execute(sql`ALTER TABLE t_ssd DISABLE TRIGGER ALL;`);
+        }
+
+        // 2. Вставляем ССД (Главная таблица)
         for (const batch of toDbChunks.info) {
             await tx.insert(tSsd).values(batch);
         }
-    });
-    await db.transaction(async (tx) => {
+
+        // 3. Уловы (Дочерняя таблица)
         for (const batch of toDbChunks.input) {
             await tx.insert(tCatch).values(batch);
         }
-    });
-    await db.transaction(async (tx) => {
+
+        // 4. Продукты (Дочерняя таблица)
         for (const batch of toDbChunks.output) {
             await tx.insert(tProduct).values(batch);
+        }
+
+        // 4. Продукты Транспорт (Дочерняя таблица)
+        for (const batch of toDbChunks.outputBoard) {
+            await tx.insert(tProductTransported).values(batch);
+        }
+
+        // 5. Включаем триггеры обратно перед коммитом
+        if (isDisableTriggers) {
+            await tx.execute(sql`ALTER TABLE t_ssd ENABLE TRIGGER ALL;`);
+            console.log('🟢 Триггеры успешно включены обратно.');
         }
     });
 
@@ -292,25 +342,3 @@ export const addSSDInfo = async ({ request, response }: CtxT) => {
     bot.log(JSON.stringify(errorObj, null, 2));
     response.status = 200;
 };
-
-// export const insertVessel = async ({ request, response }: CtxT) => {
-//     const vessel: typeof spVessel.$inferInsert = {
-//         idCompany: 1381,
-//         idVessel: 1111,
-//         id: '1381-1111',
-//         nameRus: 'ДЕБАГ',
-//         nameEng: 'DEBUG',
-//     };
-
-//     try {
-//         await db.insert(spVessel).values(vessel);
-//     } catch (e: any) {
-//         console.log(e.message);
-//     }
-
-//     response.status = 200;
-// };
-
-// export const deleteVessel = async ({ request, response }: CtxT) => {
-//     await db.delete(spVessel).where(eq(spVessel.idVessel, 1111));
-// };

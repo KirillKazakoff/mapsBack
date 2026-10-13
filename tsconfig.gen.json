@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "include": [
+        "src/api/*"
+    ],
+    "compilerOptions": {
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "rootDir": "./src/api",
+        "declarationDir": "../mapsFront/src/types",
+        "skipLibCheck": true,
+        "ignoreDeprecations": "6.0"
+    }
+}
